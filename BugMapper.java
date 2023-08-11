@@ -7,11 +7,14 @@ public class BugMapper{
     private double testPassPercentage;
     private StringLinkedList resultLog;
 
+    private StringLinkedList timeLog;
+
     private BugMapper(){
         resultLog = new StringLinkedList();
+        timeLog = new StringLinkedList();
     }
 
-    public BugMapper getInstance(){
+    public static BugMapper getInstance(){
         if(instance == null){
             instance = new BugMapper();
         }
@@ -19,76 +22,99 @@ public class BugMapper{
     }
 
     public void RunTests(){
-        System.out.println(" ===== TEST REPORT =====");
+
+        String boldWhite = "\033[1;37m";
+        String resetColour = "\033[0m";
+        String red = "\033[1;31m";
+        String green = "\033[1;32m";
+
+        System.out.println(boldWhite+"\n\n ===== TEST REPORT =====\n");
         
-        int count = 0;
+        int count = 1;
+        System.out.println(resetColour+" #### ASSERTION TESTS #### ");
         while(resultLog.hasNext()){
-            System.out.println("-> Test "+count+" : "+resultLog.next());
+            String next = resultLog.next().value;
+            String colour = (next.contains("passed")) ? green : red;  
+            System.out.println("-> Test "+count+" : "+colour+next+resetColour);
+            count++;
+        }
+
+        count = 1;
+        System.out.println(resetColour+"\n #### RUNTIME TESTS #### ");
+        while(timeLog.hasNext()){
+            System.out.println("-> Runtime Test "+count+" : "+timeLog.next().value);
             count++;
         }
 
 
-        testPassPercentage = 100 * (totalTestsPassed/totalTestsRun);
-        System.out.println(" >> "+totalTestsPassed+" tests passed of "+totalTestsRun+" tests ("+testPassPercentage+"%)");
+        testPassPercentage = 100 * totalTestsPassed/totalTestsRun;
+        System.out.println("\n >> "+totalTestsPassed+" tests passed of "+totalTestsRun+" tests ("+testPassPercentage+"%)");
     }
 
 
     /**
-     * to run, put 'testRunTime(YourClass::yourmethod);'
+     * to run, put 'testRunTime( YourClass::yourMethod );'
      * 
      * @param method the method you're testing the run time of
+     * @return a string describing how long it took the method to run.
      */
-    public double TestRunTime(test method){
-        double start = System.currentTimeMillis();
-
-        method.run();
-
-        double end = System.currentTimeMillis();
-
-        return end - start;
+    public void TestRunTime(test method){
+        double time;
+        try{            
+            double start = System.currentTimeMillis();
+    
+            method.run();
+    
+            double end = System.currentTimeMillis();
+    
+            time = (end - start) / 1000;
+            timeLog.add( "tested method took "+time+" seconds to run");
+        }catch(Exception e){
+            timeLog.add("there was an exception thrown in your method:\n"+e.getMessage());
+        }
     }
 
 
-    public void assertTrue(boolean expression)throws Exception{
+    public void assertTrue(boolean expression){
         totalTestsRun++;
         if(! ((boolean)expression) ){
             resultLog.add("expression did not evaluate to true.");
             return;
         }
-        resultLog.add("passed.");
+        resultLog.add("assertTrue passed.");
         totalTestsPassed++;
     }
 
 
-    public void assertFalse(boolean expression)throws Exception{
+    public void assertFalse(boolean expression){
         totalTestsRun++;
         if( ((boolean)expression) ){
-            resultLog.add("expression did not evaluate to true.");
+            resultLog.add("expression did not evaluate to false.");
             return;
         }
-        resultLog.add("passed.");
+        resultLog.add("assertFalse passed.");
         totalTestsPassed++;
     }
 
 
-    public void assertNull(Object expression)throws Exception{
+    public void assertNull(Object expression){
         totalTestsRun++;
         if( expression != null){
-            resultLog.add("expression did not evaluate to true.");
+            resultLog.add("object is not null.");
             return;
         }
-        resultLog.add("passed.");
+        resultLog.add("assertNull passed.");
         totalTestsPassed++;
     }
 
 
-    public void assertNotNUll(Object expression)throws Exception{
+    public void assertNotNull(Object expression){
         totalTestsRun++;
         if( expression == null ){
-            resultLog.add("expression did not evaluate to true.");
+            resultLog.add("object is null.");
             return;
         }
-        resultLog.add("passed.");
+        resultLog.add("assertNotNull passed.");
         totalTestsPassed++;
     }
 }

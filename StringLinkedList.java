@@ -61,7 +61,12 @@ public class StringLinkedList{
         return iterator.current;
     }
 
-    public boolean hasNext(){return iterator.current.next != null;}
+    public boolean hasNext(){
+        if(iterator.current == null){
+            return head != null;
+        }
+        return iterator.current.next != null;
+    }
 
     public int size(){return size;}
 
