@@ -117,4 +117,26 @@ public class BugMapper{
         resultLog.add("assertNotNull passed.");
         totalTestsPassed++;
     }
+
+
+    public void assertEquals(Object comparedObject, Object ExpectedObject){
+        totalTestsRun++;
+        if(! comparedObject.equals(ExpectedObject)){
+            resultLog.add("objects are not the same.");
+            return;
+        }
+        resultLog.add("assertEquals passed.");
+        totalTestsPassed++;
+    }
+
+
+    public void assertSame(Object comparedObject, Object ExpectedObject){
+        totalTestsRun++;
+        if(comparedObject != ExpectedObject){
+            resultLog.add("objects are not identical (i.e. the references point to different objects in memory).");
+            return;
+        }
+        resultLog.add("assertSame passed.");
+        totalTestsPassed++;
+    }
 }
